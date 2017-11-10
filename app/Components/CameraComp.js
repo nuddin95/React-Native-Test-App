@@ -8,23 +8,61 @@ import {
     Platform, 
     StyleSheet, 
     Button,
+    ScrollView,
     Image} from 'react-native';
-import styles from './Styles.js'
+import styles from './Styles.js';
+import Gallery from './GalleryComp.js';
 import Camera from 'react-native-camera';
+import * as firebase from 'firebase';
+
+const firebaseConfig ={
+  apiKey: "AIzaSyCa3bPLTfp84fXJ5zUBeI6fyvgyqfKfNYU",
+  authDomain: "stackathon-17f9d.firebaseapp.com",
+  databaseURL: "https://stackathon-17f9d.firebaseio.com",
+  projectId: "stackathon-17f9d",
+  storageBucket: ""
+}
+
+const firebaseApp = firebase.initializeApp(firebaseConfig)
 
 export default class CameraComp extends Component{
     constructor(props){
         super(props);
         this.state = {
             camera:false,
-            pics:[props.pics],
-            currentImage:{}
+            savedPics:[]
         }
+        this.picturesRef = this.getRef().child('Pictures')
     }
 
+    getRef(){
+        return firebaseApp.database().ref()
+      }
+    
+    componentWillMount(){
+        this.getPictures(this.picturesRef)
+      }
+    
     componentDidMount(){
-        console.log(this.state.pics)
-    }
+        this.getPictures(this.picturesRef)
+      }
+
+    getPictures(picturesRef){
+        picturesRef.on('value', (pic)=>{
+          let pics = [];
+          pic.forEach(child => {
+            pics.push({
+              _key:child.key,
+              mediaUri: child.val().mediaUri,
+              path:child.val().path
+            })
+          })
+          this.setState({
+            savedPics:[...pics]
+          })
+        })
+      }
+
   render(){
     return (
         <View>
@@ -46,13 +84,12 @@ export default class CameraComp extends Component{
                     <Text style={styles.capture} onPress={this.takePicture.bind(this)}>[CAPTURE]</Text>
                 </Camera>
             </View>):false}
-            {this.state.pics.length ? (
-                <View>
+            {this.state.savedPics.length ? (
+                <ScrollView>
                     <Text>GALLERY</Text>
                     <View style = {styles.allImages}>
-                        {/* <Text>YOU'RE SUCH A GREAT PHOTOGRAPHER!!!</Text> */}
                         {
-                            this.state.pics.map((pic, ind) => 
+                            this.state.savedPics.map((pic, ind) => 
                                 (
                                     <View key={ind}>
                                         <Image
@@ -66,7 +103,7 @@ export default class CameraComp extends Component{
                             )
                         }
                     </View>
-                </View>):false
+                </ScrollView>):false
             }
                 
         </View>
@@ -75,11 +112,10 @@ export default class CameraComp extends Component{
 
   takePicture() {
     const options = {};
-    //options.location = ...
     this.camera.capture({metadata: options})
       .then((data) => {
           console.log(data)
-          //this.setState({pics:[...this.state.pics, data]})
+          this.picturesRef.push(data)
         })
       .catch(err => console.error(err));
   }
