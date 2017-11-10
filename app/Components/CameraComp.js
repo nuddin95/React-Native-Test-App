@@ -13,15 +13,18 @@ import styles from './Styles.js'
 import Camera from 'react-native-camera';
 
 export default class CameraComp extends Component{
-    constructor(){
-        super();
+    constructor(props){
+        super(props);
         this.state = {
             camera:false,
-            pics:[],
+            pics:[props.pics],
             currentImage:{}
         }
     }
 
+    componentDidMount(){
+        console.log(this.state.pics)
+    }
   render(){
     return (
         <View>
@@ -76,7 +79,7 @@ export default class CameraComp extends Component{
     this.camera.capture({metadata: options})
       .then((data) => {
           console.log(data)
-          this.setState({pics:[...this.state.pics, data]})
+          //this.setState({pics:[...this.state.pics, data]})
         })
       .catch(err => console.error(err));
   }

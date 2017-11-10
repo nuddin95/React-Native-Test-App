@@ -1,3 +1,4 @@
+
 import React, { Component } from 'react';
 import { AppRegistry, Text, View } from 'react-native';
 // import { Camera } from 'react-native-camera';
@@ -13,7 +14,7 @@ export default class Component4 extends Component{
   render(){
     return (
       <View>
-      	<Text>Component 4</Text>
+
       </View>
       )
   }
