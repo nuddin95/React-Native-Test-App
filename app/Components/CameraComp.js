@@ -13,7 +13,9 @@ import {
 import styles from './Styles.js';
 import Gallery from './GalleryComp.js';
 import Camera from 'react-native-camera';
+import { actions } from 'react-native-router-flux';
 import * as firebase from 'firebase';
+
 
 const firebaseConfig ={
   apiKey: "AIzaSyCa3bPLTfp84fXJ5zUBeI6fyvgyqfKfNYU",
@@ -93,7 +95,7 @@ export default class CameraComp extends Component{
                                 (
                                     <View key={ind}>
                                         <Image
-                                            onClick={this.selectImage.bind(this)}
+                                            onPress={actions.singleImage()}
                                             key={`pic #${ind}`}
                                             style={styles.SingleImage}
                                             source={{uri:pic.path}}
